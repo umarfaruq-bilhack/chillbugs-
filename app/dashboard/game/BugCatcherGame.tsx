@@ -90,7 +90,7 @@ export function BugCatcherGame() {
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; danger: boolean }[]>([])
   const [soundOn, setSoundOn] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
-  const animFrameRef = useRef<number>()
+  const animFrameRef = useRef<number>(0)
   const lastTimeRef = useRef<number>(0)
   const bugsRef = useRef<Bug[]>([])
   const nextIdRef = useRef(0)
