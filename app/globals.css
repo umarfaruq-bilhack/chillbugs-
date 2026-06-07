@@ -1,0 +1,228 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --green: #00ff87;
+  --green-dim: #00cc6a;
+  --surface: #111111;
+  --surface-2: #1a1a1a;
+  --border: #2a2a2a;
+}
+
+body {
+  font-family: var(--font-body);
+  background: #0a0a0a;
+  color: white;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Animated bug floating */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(-3deg); }
+  50% { transform: translateY(-20px) rotate(3deg); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translateY(0px) rotate(5deg); }
+  50% { transform: translateY(-15px) rotate(-5deg); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-25px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 135, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(0, 255, 135, 0.6); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.float-1 { animation: float 6s ease-in-out infinite; }
+.float-2 { animation: float2 8s ease-in-out infinite; }
+.float-3 { animation: float3 5s ease-in-out infinite; }
+.glow-btn { animation: pulse-glow 2s ease-in-out infinite; }
+.marquee-track { animation: marquee 20s linear infinite; }
+
+/* Noise texture overlay */
+.noise::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+}
+
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(0,255,135,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,135,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Font utilities */
+.font-display { font-family: var(--font-display), sans-serif; }
+.font-body { font-family: var(--font-body), sans-serif; }
+
+
+/* Hide RainbowKit debug button */
+[data-rk] button[aria-label='Open Wallet'],
+nextjs-portal,
+[data-nextjs-dialog-overlay] { display: none !important; }
+
+/* ── Animations ────────────────────────────────────── */
+
+/* Hero text slide in */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes barFill {
+  from { width: 0%; }
+}
+
+@keyframes bugFloat {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); opacity: 0.08; }
+  50%       { transform: translateY(-18px) rotate(5deg); opacity: 0.15; }
+}
+
+@keyframes bugFloat2 {
+  0%, 100% { transform: translateY(0px) rotate(3deg); opacity: 0.06; }
+  50%       { transform: translateY(-12px) rotate(-3deg); opacity: 0.12; }
+}
+
+@keyframes ripple {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Hero animations */
+.anim-hero-1 { animation: slideUp 0.7s ease both; }
+.anim-hero-2 { animation: slideUp 0.7s ease 0.1s both; }
+.anim-hero-3 { animation: slideUp 0.7s ease 0.2s both; }
+.anim-hero-4 { animation: slideUp 0.7s ease 0.3s both; }
+.anim-hero-5 { animation: slideUp 0.7s ease 0.4s both; }
+
+/* Card fade in */
+.anim-fade   { animation: fadeIn 0.6s ease both; }
+.anim-scale  { animation: scaleIn 0.5s ease both; }
+
+/* Stats count up */
+.anim-stat   { animation: countUp 0.5s ease both; }
+
+/* Progress bar */
+.anim-bar    { animation: barFill 1.2s ease 0.5s both; }
+
+/* Floating bugs — now works on ALL screen sizes */
+.bug-float-1 { animation: bugFloat  7s ease-in-out infinite; }
+.bug-float-2 { animation: bugFloat2 9s ease-in-out infinite; }
+.bug-float-3 { animation: bugFloat  5s ease-in-out infinite 1s; }
+.bug-float-4 { animation: bugFloat2 8s ease-in-out infinite 2s; }
+
+/* Ripple on buttons */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid rgba(0,255,135,0.4);
+  animation: ripple 2s ease-in-out infinite;
+}
+
+/* Shimmer on WL badge */
+.shimmer-text {
+  background: linear-gradient(90deg, #00ff87 0%, #ffffff 50%, #00ff87 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Scroll fade-in (used with JS IntersectionObserver) */
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.scroll-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile nav drawer — force solid background */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 288px;
+  background-color: #000000 !important;
+  border-left: 1px solid #2a2a2a;
+  z-index: 99999 !important;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 99998 !important;
+}
+
+/* Tweet embed styles */
+.tweet-embed iframe {
+  border-radius: 12px !important;
+  max-width: 100% !important;
+}
+.tweet-embed .twitter-tweet {
+  margin: 0 !important;
+}
+
+/* Toast animation */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
