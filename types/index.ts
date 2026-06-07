@@ -28,7 +28,7 @@ export type ActivityType =
   | 'share_x'
 
 export interface LeaderboardEntry {
-  rank: number
+  rank?: number
   x_username: string
   x_avatar_url: string
   bug_points: number
