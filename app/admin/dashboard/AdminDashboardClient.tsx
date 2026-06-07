@@ -52,6 +52,7 @@ interface CollabApp {
   spots_allocated: number
   admin_note: string | null
   winners_url: string | null
+  document_url: string | null
   created_at: string
   users: { x_username: string; x_avatar_url: string }
 }
