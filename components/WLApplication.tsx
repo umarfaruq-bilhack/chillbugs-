@@ -365,7 +365,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 </div>
                 {doneRepost && !doneQuote && (
                   <button onClick={() => {
-                    window.open(`https://twitter.com/intent/retweet?tweet_id=${tweetUrl.split('/').pop()}&related=TheChillBugs`, '_blank')
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent('Just joined the @TheChillBugs Buglist! 🐛\n\nSecure your WL spot — tag 2 friends below 👇\nJoin here: ' + (typeof window !== 'undefined' ? window.location.origin : 'https://chillbugs.xyz') + '?wlref=' + form.x_username.replace('@',''))}&url=${encodeURIComponent(tweetUrl)}`, '_blank')
                     setClickedQuote(true)
                   }} style={goBtn}>Quote →</button>
                 )}
