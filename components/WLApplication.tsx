@@ -5,13 +5,26 @@ import { useState, useEffect } from 'react'
 // Intro animation component
 function IntroAnimation({ onDone }: { onDone: () => void }) {
   const [phase, setPhase] = useState(0)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 300)
-    const t2 = setTimeout(() => setPhase(2), 1200)
-    const t3 = setTimeout(() => setPhase(3), 2000)
-    const t4 = setTimeout(() => onDone(), 2800)
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
+    const t1 = setTimeout(() => setPhase(1), 400)
+    const t2 = setTimeout(() => setPhase(2), 1400)
+    const t3 = setTimeout(() => setPhase(3), 3500)
+    const t4 = setTimeout(() => onDone(), 4200)
+
+    // Smooth progress bar over 3.5 seconds
+    let start = 0
+    const interval = setInterval(() => {
+      start += 1
+      setProgress(Math.min(start, 100))
+      if (start >= 100) clearInterval(interval)
+    }, 35)
+
+    return () => {
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4)
+      clearInterval(interval)
+    }
   }, [onDone])
 
   return (
@@ -64,16 +77,14 @@ function IntroAnimation({ onDone }: { onDone: () => void }) {
         </div>
       </div>
 
-      {/* Loading bar */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, height: '3px',
-        background: '#1a1a1a',
-      }}>
-        <div style={{
-          height: '100%', background: '#00ff87',
-          transition: 'width 2.2s ease',
-          width: phase >= 1 ? '100%' : '0%',
-        }} />
+      {/* Loading bar with percentage */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 16px 8px', color: 'rgba(255,255,255,0.3)', fontSize: '12px', fontFamily: 'var(--font-display, sans-serif)' }}>
+          {progress}%
+        </div>
+        <div style={{ height: '3px', background: '#1a1a1a' }}>
+          <div style={{ height: '100%', background: 'linear-gradient(90deg, #00ff87, #00cc6a)', width: `${progress}%`, transition: 'width 0.1s linear', boxShadow: '0 0 10px rgba(0,255,135,0.5)' }} />
+        </div>
       </div>
 
       <style>{`
@@ -121,7 +132,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
 
   const allTasksDone = doneFollow && doneRepost && doneQuote && doneTag && commentVerified
 
-  const quoteText = `Just discovered @TheChillBugs 🐛\n\nAmazing NFT project — join the Buglist now!\n${tweetUrl}`
+  const quoteText = `Joining @TheChillBugs Buglist! 🐛\n\nTag your friends below 👇\nJoin here: ${typeof window !== 'undefined' ? window.location.origin : 'https://chillbugs.xyz'}?wlref=${form.x_username.replace('@','')}`
 
   const handleSubmit = async () => {
     if (!wallet.trim()) { setError('Wallet address is required'); return }
@@ -354,7 +365,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 </div>
                 {doneRepost && !doneQuote && (
                   <button onClick={() => {
-                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(quoteText)}&url=${encodeURIComponent(tweetUrl)}`, '_blank')
+                    window.open(`https://twitter.com/intent/retweet?tweet_id=${tweetUrl.split('/').pop()}&related=TheChillBugs`, '_blank')
                     setClickedQuote(true)
                   }} style={goBtn}>Quote →</button>
                 )}
