@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export function WLApplication() {
+export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }: { tweetUrl?: string }) {
   const [step, setStep] = useState(1)
   const [doneFollow, setDoneFollow] = useState(false)
   const [doneRepost, setDoneRepost] = useState(false)

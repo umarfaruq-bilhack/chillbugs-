@@ -1,13 +1,8 @@
 ﻿const fs = require('fs');
-const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
-
-// Remove all windows-specific tailwind packages
-Object.keys(lock.packages).forEach(key => {
-  if (key.includes('win32') || key.includes('darwin') || key.includes('oxide-win') || key.includes('oxide-darwin')) {
-    delete lock.packages[key];
-  }
-});
-
-fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2));
-console.log('Removed windows packages. Remaining oxide packages:');
-Object.keys(lock.packages).filter(k => k.includes('oxide')).forEach(k => console.log(' -', k));
+let c = fs.readFileSync('components/WLApplication.tsx', 'utf8');
+c = c.replace(
+  "export function WLApplication() {",
+  "export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }: { tweetUrl?: string }) {"
+);
+fs.writeFileSync('components/WLApplication.tsx', c, 'utf8');
+console.log('done');
