@@ -7,6 +7,9 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
   const [doneFollow, setDoneFollow] = useState(false)
   const [doneRepost, setDoneRepost] = useState(false)
   const [doneTag, setDoneTag] = useState(false)
+  const [clickedFollow, setClickedFollow] = useState(false)
+  const [clickedRepost, setClickedRepost] = useState(false)
+  const [clickedTag, setClickedTag] = useState(false)
   const [commentLink, setCommentLink] = useState('')
   const [commentError, setCommentError] = useState('')
   const [commentVerified, setCommentVerified] = useState(false)
@@ -143,9 +146,13 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
         {/* STEP 1 */}
         {step === 1 && (
           <div style={cardStyle}>
-            <div style={{ display:'flex', justifyContent:'center', marginBottom:'20px' }}>
-                <img src="/chillbug-clean.png" alt="Chill Bug" style={{ width:'120px', height:'120px', objectFit:'contain' }} />
-              </div>
+            <div style={{ display:'flex', gap:'10px', justifyContent:'center', marginBottom:'20px' }}>
+              {[1,2,3,4].map(i => (
+                <div key={i} style={{ width:'52px', height:'52px', background:'#0a0a0a', border:'1px solid #2a2a2a', borderRadius:'12px', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <img src="/chillbug-clean.png" alt="Chill Bug" style={{ width:'44px', height:'44px', objectFit:'contain', opacity: 0.6 + (i * 0.1) }} />
+                </div>
+              ))}
+            </div>
             <h2 style={{ color:'white', fontSize:'22px', fontWeight:900, margin:'0 0 4px' }}>Your Details</h2>
             <p style={{ color:'rgba(255,255,255,0.4)', fontSize:'13px', margin:'0 0 4px' }}>Enter your socials so we can verify your tasks.</p>
 
@@ -183,7 +190,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'12px' }}>Follow @TheChillBugs on X</div>
               </div>
               {!doneFollow ? (
-                <button onClick={() => { window.open(tweetUrl, '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
+                <button onClick={() => { window.open(tweetUrl, '_blank'); setClickedFollow(true) }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
                   Go →
                 </button>
               ) : null}
@@ -191,7 +198,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
             </div>
 
             {/* Mark follow done button */}
-            {!doneFollow && (
+            {!doneFollow && clickedFollow && (
               <button onClick={() => setDoneFollow(true)} style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid #2a2a2a', color:'rgba(255,255,255,0.5)', borderRadius:'10px', padding:'8px', fontSize:'12px', cursor:'pointer', marginBottom:'10px' }}>
                 ✓ I've followed @TheChillBugs — mark as done
               </button>
@@ -207,13 +214,13 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'12px' }}>Like & repost the pinned tweet</div>
               </div>
               {doneFollow && !doneRepost && (
-                <button onClick={() => { window.open(tweetUrl, '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
+                <button onClick={() => { window.open(tweetUrl, '_blank'); setClickedRepost(true) }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
                   Go →
                 </button>
               )}
               {doneRepost && <span style={{ color:'#00ff87', fontSize:'13px', fontWeight:700 }}>Done ✓</span>}
             </div>
-            {doneFollow && !doneRepost && (
+            {doneFollow && !doneRepost && clickedRepost && (
               <button onClick={() => setDoneRepost(true)} style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid #2a2a2a', color:'rgba(255,255,255,0.5)', borderRadius:'10px', padding:'8px', fontSize:'12px', cursor:'pointer', marginBottom:'10px' }}>
                 ✓ I've liked & reposted — mark as done
               </button>
@@ -229,13 +236,13 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'12px' }}>Tag 2 friends in the comments</div>
               </div>
               {doneRepost && !doneTag && (
-                <button onClick={() => { window.open(tweetUrl, '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
+                <button onClick={() => { window.open(tweetUrl, '_blank'); setClickedTag(true) }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
                   Go →
                 </button>
               )}
               {doneTag && <span style={{ color:'#00ff87', fontSize:'13px', fontWeight:700 }}>Done ✓</span>}
             </div>
-            {doneRepost && !doneTag && (
+            {doneRepost && !doneTag && clickedTag && (
               <button onClick={() => setDoneTag(true)} style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid #2a2a2a', color:'rgba(255,255,255,0.5)', borderRadius:'10px', padding:'8px', fontSize:'12px', cursor:'pointer', marginBottom:'10px' }}>
                 ✓ I've tagged 2 friends — mark as done
               </button>
