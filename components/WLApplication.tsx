@@ -72,7 +72,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
     return (
       <div style={{ minHeight:'100vh', background:'#0a0a0a', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'24px', fontFamily:'var(--font-display, sans-serif)' }}>
         <div style={{ width:'100%', maxWidth:'460px', background:'#111', border:'1px solid #2a2a2a', borderRadius:'24px', padding:'40px 32px', textAlign:'center' }}>
-          <div style={{ fontSize:'72px', marginBottom:'16px' }}><img src="/chillbug-clean.png" alt="Chill Bug" style={{ width:'100px', height:'100px', objectFit:'contain' }} /></div>
+          <div style={{ fontSize:'72px', marginBottom:'16px' }}><img src="./chillbug-clean.png" alt="Chill Bug" style={{ width:'100px', height:'100px', objectFit:'contain' }} /></div>
           <h1 style={{ color:'#00ff87', fontSize:'32px', fontWeight:900, margin:'0 0 8px', letterSpacing:'-1px' }}>YOU'VE JOINED THE BUGLIST!</h1>
           <p style={{ color:'rgba(255,255,255,0.6)', fontSize:'15px', margin:'0 0 24px' }}>Your application is confirmed. Share your link to refer friends!</p>
 
@@ -113,7 +113,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
       {/* Nav */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 32px', maxWidth:'600px', margin:'0 auto', width:'100%', boxSizing:'border-box' as const }}>
         <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-          <img src="/chillbug-clean.png" alt="Chill Bug" style={{ width:'28px', height:'28px', objectFit:'contain' }} />
+          <img src="./chillbug2-clean.jpeg" alt="Chill Bug" style={{ width:'28px', height:'28px', objectFit:'contain' }} />
           <span style={{ color:'white', fontWeight:900, fontSize:'16px', letterSpacing:'-0.5px' }}>CHILL BUGS</span>
         </div>
         <a href="https://twitter.com/TheChillBugs" target="_blank" rel="noopener noreferrer" style={{ color:'rgba(255,255,255,0.4)', fontSize:'13px', textDecoration:'none' }}>@TheChillBugs</a>
@@ -146,7 +146,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
             <div style={{ display:'flex', gap:'10px', justifyContent:'center', marginBottom:'20px' }}>
               {[1,2,3,4].map(i => (
                 <div key={i} style={{ width:'52px', height:'52px', background:'#0a0a0a', border:'1px solid #2a2a2a', borderRadius:'12px', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <img src="/chillbug-clean.png" alt="Chill Bug" style={{ width:'44px', height:'44px', objectFit:'contain', opacity: 0.6 + (i * 0.1) }} />
+                  <img src="./chillbug2-clean.jpeg" alt="Chill Bug" style={{ width:'44px', height:'44px', objectFit:'contain', opacity: 0.6 + (i * 0.1) }} />
                 </div>
               ))}
             </div>
