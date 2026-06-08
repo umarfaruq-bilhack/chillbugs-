@@ -29,6 +29,7 @@ interface Settings {
   referral_enabled: boolean
   art_contest_enabled: boolean
   collab_enabled: boolean
+  wl_application_enabled: boolean
 }
 
 interface ArtSubmission {
@@ -71,7 +72,11 @@ export function AdminDashboardClient() {
   const [settings, setSettings] = useState<Settings>({
     game_enabled: true, quiz_enabled: true, checkin_enabled: true,
     share_x_enabled: true, referral_enabled: true, art_contest_enabled: true, collab_enabled: false,
+    wl_application_enabled: false,
   })
+  const [wlTweetUrl, setWlTweetUrl] = useState('https://twitter.com/TheChillBugs')
+  const [savingTweet, setSavingTweet] = useState(false)
+  const [tweetSaved, setTweetSaved] = useState(false)
   const [artSubmissions, setArtSubmissions] = useState<ArtSubmission[]>([])
   const [collabApps, setCollabApps] = useState<CollabApp[]>([])
   const [wlApps, setWlApps] = useState<any[]>([])
@@ -110,6 +115,10 @@ export function AdminDashboardClient() {
     const res = await fetch('/api/admin/settings')
     const data = await res.json()
     setSettings(data)
+    // Fetch tweet URL
+    const res2 = await fetch('/api/admin/settings?key=wl_tweet_url')
+    const data2 = await res2.json()
+    if (data2.text_value) setWlTweetUrl(data2.text_value)
   }, [])
 
   const fetchArt = useCallback(async () => {
@@ -386,29 +395,68 @@ export function AdminDashboardClient() {
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-[#2a2a2a]">
-              <h2 className="font-display font-black text-white">Platform Controls</h2>
-              <p className="text-white/40 text-xs mt-1">Toggle features on/off in real time</p>
+          <div className="space-y-4">
+            {/* WL Tweet URL */}
+            <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl p-5">
+              <h3 className="font-display font-black text-white mb-1">WL Application Tweet</h3>
+              <p className="text-white/40 text-xs mb-4">The tweet users will Like, Repost and Tag friends under</p>
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={wlTweetUrl}
+                  onChange={e => setWlTweetUrl(e.target.value)}
+                  placeholder="https://twitter.com/TheChillBugs/status/..."
+                  className="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[#00ff87]/50 text-sm"
+                />
+                <button
+                  onClick={async () => {
+                    setSavingTweet(true)
+                    await fetch('/api/admin/settings', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ key: 'wl_tweet_url', value: true, text_value: wlTweetUrl }),
+                    })
+                    setSavingTweet(false)
+                    setTweetSaved(true)
+                    setTimeout(() => setTweetSaved(false), 2000)
+                  }}
+                  className="bg-[#00ff87]/10 border border-[#00ff87]/20 text-[#00ff87] px-4 py-2.5 rounded-xl text-sm hover:bg-[#00ff87]/20 transition-colors shrink-0"
+                >
+                  {savingTweet ? 'Saving...' : tweetSaved ? '✅ Saved!' : 'Save'}
+                </button>
+              </div>
+              {wlTweetUrl && (
+                <a href={wlTweetUrl} target="_blank" rel="noopener noreferrer" className="text-[#00ff87] text-xs hover:underline mt-2 block">
+                  Preview tweet ↗
+                </a>
+              )}
             </div>
-            <div className="divide-y divide-[#2a2a2a]">
-              {SETTINGS_LIST.map(s => (
-                <div key={s.key} className="flex items-center justify-between px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{s.icon}</span>
-                    <div>
-                      <p className="text-white font-medium text-sm">{s.label}</p>
-                      <p className="text-white/40 text-xs">{s.desc}</p>
+
+            {/* Feature toggles */}
+            <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl overflow-hidden">
+              <div className="p-4 border-b border-[#2a2a2a]">
+                <h3 className="font-display font-black text-white">Platform Controls</h3>
+                <p className="text-white/40 text-xs mt-1">Toggle features on/off in real time</p>
+              </div>
+              <div className="divide-y divide-[#2a2a2a]">
+                {SETTINGS_LIST.map(s => (
+                  <div key={s.key} className="flex items-center justify-between px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{s.icon}</span>
+                      <div>
+                        <p className="text-white font-medium text-sm">{s.label}</p>
+                        <p className="text-white/40 text-xs">{s.desc}</p>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => toggleSetting(s.key, !settings[s.key as keyof Settings])}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${settings[s.key as keyof Settings] ? 'bg-[#00ff87]' : 'bg-[#2a2a2a]'}`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${settings[s.key as keyof Settings] ? 'translate-x-7' : 'translate-x-1'}`} />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => toggleSetting(s.key, !settings[s.key as keyof Settings])}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${settings[s.key as keyof Settings] ? 'bg-[#00ff87]' : 'bg-[#2a2a2a]'}`}
-                  >
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${settings[s.key as keyof Settings] ? 'translate-x-7' : 'translate-x-1'}`} />
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}

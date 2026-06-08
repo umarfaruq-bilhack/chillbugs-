@@ -8,7 +8,19 @@ async function verifyAdmin() {
   return token === process.env.ADMIN_SECRET
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const key = searchParams.get('key')
+
+  if (key) {
+    const { data } = await supabaseAdmin
+      .from('platform_settings')
+      .select('*')
+      .eq('key', key)
+      .single()
+    return NextResponse.json(data || {})
+  }
+
   const { data } = await supabaseAdmin
     .from('platform_settings')
     .select('*')
@@ -23,11 +35,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { key, value } = await req.json()
+  const { key, value, text_value } = await req.json()
 
   await supabaseAdmin
     .from('platform_settings')
-    .upsert({ key, value, updated_at: new Date().toISOString() })
+    .upsert({ key, value, text_value, updated_at: new Date().toISOString() })
 
   return NextResponse.json({ success: true })
 }

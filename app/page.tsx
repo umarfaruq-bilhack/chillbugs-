@@ -14,6 +14,9 @@ const MARQUEE_ITEMS = [
   'EXPLORE', 'NFT DROP', 'DAILY QUESTS', 'CONNECT & EARN',
 ]
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const WL_TOTAL = 512
 
 export default async function Home() {
@@ -26,9 +29,18 @@ export default async function Home() {
 
   const wlApplicationEnabled = wlSetting?.value ?? false
 
+  // Fetch tweet URL for WL application
+  const { data: tweetSetting } = await supabaseAdmin
+    .from('platform_settings')
+    .select('text_value')
+    .eq('key', 'wl_tweet_url')
+    .single()
+
+  const tweetUrl = tweetSetting?.text_value || 'https://twitter.com/TheChillBugs'
+
   // If WL application is enabled, show full screen application
   if (wlApplicationEnabled) {
-    return <WLApplication />
+    return <WLApplication tweetUrl={tweetUrl} />
   }
 
   // Fetch real stats from DB
