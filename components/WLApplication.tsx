@@ -187,7 +187,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'12px' }}>Follow @TheChillBugs on X</div>
               </div>
               {!doneFollow ? (
-                <button onClick={() => { window.open('https://twitter.com/TheChillBugs', '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
+                <button onClick={() => { window.open(tweetUrl, '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
                   Go →
                 </button>
               ) : null}
@@ -211,7 +211,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'12px' }}>Like & repost the pinned tweet</div>
               </div>
               {doneFollow && !doneRepost && (
-                <button onClick={() => { window.open('https://twitter.com/TheChillBugs', '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
+                <button onClick={() => { window.open(tweetUrl, '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
                   Go →
                 </button>
               )}
@@ -233,7 +233,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'12px' }}>Tag 2 friends in the comments</div>
               </div>
               {doneRepost && !doneTag && (
-                <button onClick={() => { window.open('https://twitter.com/TheChillBugs', '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
+                <button onClick={() => { window.open(tweetUrl, '_blank') }} style={{ padding:'8px 16px', borderRadius:'10px', background:'#00ff87', color:'#000', border:'none', fontSize:'13px', fontWeight:700, cursor:'pointer' }}>
                   Go →
                 </button>
               )}
