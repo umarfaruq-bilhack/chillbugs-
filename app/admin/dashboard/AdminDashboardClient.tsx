@@ -57,7 +57,7 @@ interface CollabApp {
   users: { x_username: string; x_avatar_url: string }
 }
 
-type Tab = 'users' | 'settings' | 'art' | 'collab'
+type Tab = 'users' | 'settings' | 'art' | 'collab' | 'wl'
 
 export function AdminDashboardClient() {
   const router = useRouter()
@@ -74,6 +74,8 @@ export function AdminDashboardClient() {
   })
   const [artSubmissions, setArtSubmissions] = useState<ArtSubmission[]>([])
   const [collabApps, setCollabApps] = useState<CollabApp[]>([])
+  const [wlApps, setWlApps] = useState<any[]>([])
+  const [wlStats, setWlStats] = useState({ total: 0, pending: 0, approved: 0 })
   const [awardUser, setAwardUser] = useState<User | null>(null)
   const [awardPoints, setAwardPoints] = useState(50)
   const [awardReason, setAwardReason] = useState('Fan art bonus')
@@ -122,10 +124,18 @@ export function AdminDashboardClient() {
     setCollabApps(Array.isArray(data) ? data : [])
   }, [])
 
+  const fetchWlApps = useCallback(async () => {
+    const res = await fetch('/api/admin/wl-applications')
+    const data = await res.json()
+    setWlApps(data.applications || [])
+    setWlStats({ total: data.total || 0, pending: data.pending || 0, approved: data.approved || 0 })
+  }, [])
+
   useEffect(() => { fetchUsers() }, [fetchUsers])
   useEffect(() => { fetchSettings() }, [fetchSettings])
   useEffect(() => { fetchArt() }, [fetchArt])
   useEffect(() => { fetchCollab() }, [fetchCollab])
+  useEffect(() => { fetchWlApps() }, [fetchWlApps])
 
   const toggleSetting = async (key: string, value: boolean) => {
     setSettings(s => ({ ...s, [key]: value }))
@@ -247,6 +257,7 @@ export function AdminDashboardClient() {
   }
 
   const SETTINGS_LIST = [
+    { key: 'wl_application_enabled', label: 'WL Application Form', icon: '📋', desc: 'Show WL application form instead of landing page' },
     { key: 'game_enabled', label: 'Bug Catcher Game', icon: '🎮', desc: 'Allow users to play and earn points' },
     { key: 'quiz_enabled', label: 'Lore Quiz', icon: '❓', desc: 'Allow users to take quiz and earn points' },
     { key: 'checkin_enabled', label: 'Daily Check-in', icon: '📅', desc: 'Allow users to check in daily' },
@@ -297,6 +308,7 @@ export function AdminDashboardClient() {
             { id: 'settings' as Tab, label: '⚙️ Controls' },
             { id: 'art' as Tab, label: `🎨 Art (${artSubmissions.filter(a => a.status === 'pending').length})` },
             { id: 'collab' as Tab, label: `🤝 Collabs (${collabApps.filter(a => a.status === 'pending').length})` },
+            { id: 'wl' as Tab, label: `📋 WL Apps (${wlStats.pending})` },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors
@@ -566,6 +578,102 @@ export function AdminDashboardClient() {
             )}
           </div>
         )}
+        {/* WL Applications Tab */}
+        {activeTab === 'wl' && (
+          <div className="space-y-4">
+            {/* Summary */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Total Applications', value: wlStats.total, color: 'text-white' },
+                { label: 'Pending Review', value: wlStats.pending, color: 'text-orange-400' },
+                { label: 'Approved', value: wlStats.approved, color: 'text-[#00ff87]' },
+              ].map(s => (
+                <div key={s.label} className="bg-[#111111] border border-[#2a2a2a] rounded-2xl p-4 text-center">
+                  <div className={`font-display font-black text-2xl ${s.color}`}>{s.value}</div>
+                  <div className="text-white/40 text-xs mt-1">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Export CSV */}
+            <div className="flex justify-end">
+              <button onClick={() => {
+                const rows = [
+                  ['X Username', 'Discord', 'Wallet', 'Referral Code', 'Status', 'Applied'],
+                  ...wlApps.map(a => [a.x_username, a.discord_username || '', a.wallet_address, a.referral_code || '', a.status, new Date(a.created_at).toLocaleDateString()])
+                ]
+                const csv = rows.map(r => r.join(',')).join('\n')
+                const blob = new Blob([csv], { type: 'text/csv' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `wl-applications-${new Date().toISOString().split('T')[0]}.csv`
+                a.click()
+              }} className="text-xs bg-[#00ff87]/10 border border-[#00ff87]/20 text-[#00ff87] px-3 py-1.5 rounded-xl hover:bg-[#00ff87]/20 transition-colors">
+                📥 Export CSV
+              </button>
+            </div>
+
+            <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl overflow-hidden">
+              <div className="p-4 border-b border-[#2a2a2a]">
+                <h2 className="font-display font-black text-white">WL Applications ({wlStats.total})</h2>
+              </div>
+              {wlApps.length === 0 ? (
+                <div className="p-8 text-center text-white/30">No applications yet</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-[#2a2a2a]">
+                        {['X Username', 'Discord', 'Wallet', 'Referral', 'Status', 'Applied', 'Action'].map(h => (
+                          <th key={h} className="text-left px-4 py-3 text-white/40 text-xs uppercase tracking-wider font-medium">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#2a2a2a]">
+                      {wlApps.map(app => (
+                        <tr key={app.id} className="hover:bg-white/5 transition-colors">
+                          <td className="px-4 py-3 text-white font-medium">@{app.x_username}</td>
+                          <td className="px-4 py-3 text-white/50 text-xs">{app.discord_username || '—'}</td>
+                          <td className="px-4 py-3 text-white/50 font-mono text-xs">{app.wallet_address ? `${app.wallet_address.slice(0, 6)}...${app.wallet_address.slice(-4)}` : '—'}</td>
+                          <td className="px-4 py-3 text-white/40 text-xs">{app.referral_code || '—'}</td>
+                          <td className="px-4 py-3">
+                            <span className="text-xs px-2 py-1 rounded-full font-medium"
+                              style={{ color: statusColor(app.status), background: `${statusColor(app.status)}15`, border: `1px solid ${statusColor(app.status)}30` }}>
+                              {app.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-white/40 text-xs">{new Date(app.created_at).toLocaleDateString()}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex gap-2">
+                              {app.status !== 'approved' && (
+                                <button onClick={async () => {
+                                  await fetch('/api/admin/wl-applications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: app.id, status: 'approved' }) })
+                                  fetchWlApps()
+                                }} className="text-xs bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] px-2 py-1 rounded-lg transition-colors">
+                                  Approve
+                                </button>
+                              )}
+                              {app.status !== 'rejected' && (
+                                <button onClick={async () => {
+                                  await fetch('/api/admin/wl-applications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: app.id, status: 'rejected' }) })
+                                  fetchWlApps()
+                                }} className="text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 px-2 py-1 rounded-lg transition-colors">
+                                  Reject
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* Award Modal */}

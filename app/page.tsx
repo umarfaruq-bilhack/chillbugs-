@@ -5,6 +5,7 @@ import { ReferralHandler } from '@/components/ReferralHandler'
 import { supabaseAdmin } from '@/lib/supabase'
 import { LandingAnimations } from '@/components/LandingAnimations'
 import { MobileNav } from '@/components/MobileNav'
+import { WLApplication } from '@/components/WLApplication'
 
 const MARQUEE_ITEMS = [
   'CHILL BUGS', 'EARN WL', 'LEADERBOARD', 'BUG CATCHER',
@@ -16,6 +17,20 @@ const MARQUEE_ITEMS = [
 const WL_TOTAL = 512
 
 export default async function Home() {
+  // Check if WL application mode is enabled
+  const { data: wlSetting } = await supabaseAdmin
+    .from('platform_settings')
+    .select('value')
+    .eq('key', 'wl_application_enabled')
+    .single()
+
+  const wlApplicationEnabled = wlSetting?.value ?? false
+
+  // If WL application is enabled, show full screen application
+  if (wlApplicationEnabled) {
+    return <WLApplication />
+  }
+
   // Fetch real stats from DB
   const { count: playerCount } = await supabaseAdmin
     .from('users')
