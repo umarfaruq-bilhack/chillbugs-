@@ -34,16 +34,16 @@ interface LevelConfig {
 }
 
 const LEVELS: LevelConfig[] = [
-  { level: 1, bugsToWin: 10, timeLimit: 30, dangerChance: 0.15, speedMultiplier: 1.0, hasBoss: false, pointsReward: 50, title: 'ROOKIE BUG HUNTER', description: 'Catch 10 bugs in 30 seconds', bgColor: '#0a0a0a' },
-  { level: 2, bugsToWin: 12, timeLimit: 28, dangerChance: 0.20, speedMultiplier: 1.1, hasBoss: false, pointsReward: 60, title: 'BUG APPRENTICE', description: 'Bugs move faster now!', bgColor: '#0a0a0f' },
-  { level: 3, bugsToWin: 15, timeLimit: 26, dangerChance: 0.25, speedMultiplier: 1.2, hasBoss: false, pointsReward: 75, title: 'BUG TRACKER', description: 'More danger bugs appear', bgColor: '#0a0f0a' },
-  { level: 4, bugsToWin: 18, timeLimit: 24, dangerChance: 0.30, speedMultiplier: 1.35, hasBoss: false, pointsReward: 90, title: 'BUG SLAYER', description: 'They\'re getting faster!', bgColor: '#0f0a0a' },
-  { level: 5, bugsToWin: 20, timeLimit: 22, dangerChance: 0.35, speedMultiplier: 1.5, hasBoss: true, pointsReward: 110, title: 'BOSS ENCOUNTER', description: '⚠️ A boss bug appears! Avoid it!', bgColor: '#0f0a0f' },
-  { level: 6, bugsToWin: 22, timeLimit: 20, dangerChance: 0.35, speedMultiplier: 1.6, hasBoss: true, pointsReward: 130, title: 'BUG COMMANDER', description: 'Speed and chaos!', bgColor: '#0a0f0f' },
-  { level: 7, bugsToWin: 25, timeLimit: 20, dangerChance: 0.40, speedMultiplier: 1.75, hasBoss: true, pointsReward: 155, title: 'SWARM MASTER', description: 'The swarm is intense!', bgColor: '#0f0f0a' },
-  { level: 8, bugsToWin: 28, timeLimit: 18, dangerChance: 0.40, speedMultiplier: 1.9, hasBoss: true, pointsReward: 180, title: 'ELITE HUNTER', description: 'Only the best survive', bgColor: '#100a0a' },
-  { level: 9, bugsToWin: 30, timeLimit: 16, dangerChance: 0.45, speedMultiplier: 2.1, hasBoss: true, pointsReward: 210, title: 'LEGENDARY HUNTER', description: 'Near impossible...', bgColor: '#100010' },
-  { level: 10, bugsToWin: 35, timeLimit: 15, dangerChance: 0.50, speedMultiplier: 2.5, hasBoss: true, pointsReward: 300, title: 'GRANDMASTER', description: '🏆 The ultimate challenge!', bgColor: '#0a0010' },
+  { level: 1, bugsToWin: 10, timeLimit: 35, dangerChance: 0.10, speedMultiplier: 1.0, hasBoss: false, pointsReward: 50, title: 'ROOKIE BUG HUNTER', description: 'Catch 10 bugs in 35 seconds', bgColor: '#0a0a0a' },
+  { level: 2, bugsToWin: 12, timeLimit: 35, dangerChance: 0.12, speedMultiplier: 1.1, hasBoss: false, pointsReward: 60, title: 'BUG APPRENTICE', description: 'Bugs move a little faster', bgColor: '#0a0a0f' },
+  { level: 3, bugsToWin: 14, timeLimit: 35, dangerChance: 0.15, speedMultiplier: 1.2, hasBoss: false, pointsReward: 75, title: 'BUG TRACKER', description: 'Watch out for danger bugs!', bgColor: '#0a0f0a' },
+  { level: 4, bugsToWin: 16, timeLimit: 33, dangerChance: 0.18, speedMultiplier: 1.3, hasBoss: false, pointsReward: 90, title: 'BUG SLAYER', description: 'Getting faster now!', bgColor: '#0f0a0a' },
+  { level: 5, bugsToWin: 18, timeLimit: 33, dangerChance: 0.20, speedMultiplier: 1.4, hasBoss: true, pointsReward: 110, title: 'BOSS ENCOUNTER', description: '⚠️ First boss bug appears!', bgColor: '#0f0a0f' },
+  { level: 6, bugsToWin: 20, timeLimit: 32, dangerChance: 0.22, speedMultiplier: 1.5, hasBoss: true, pointsReward: 130, title: 'BUG COMMANDER', description: 'Speed and danger increase!', bgColor: '#0a0f0f' },
+  { level: 7, bugsToWin: 22, timeLimit: 30, dangerChance: 0.25, speedMultiplier: 1.65, hasBoss: true, pointsReward: 155, title: 'SWARM MASTER', description: 'The swarm is intense!', bgColor: '#0f0f0a' },
+  { level: 8, bugsToWin: 25, timeLimit: 28, dangerChance: 0.28, speedMultiplier: 1.8, hasBoss: true, pointsReward: 180, title: 'ELITE HUNTER', description: 'Only the best survive', bgColor: '#100a0a' },
+  { level: 9, bugsToWin: 28, timeLimit: 26, dangerChance: 0.32, speedMultiplier: 2.0, hasBoss: true, pointsReward: 210, title: 'LEGENDARY HUNTER', description: 'Near impossible...', bgColor: '#100010' },
+  { level: 10, bugsToWin: 32, timeLimit: 25, dangerChance: 0.38, speedMultiplier: 2.3, hasBoss: true, pointsReward: 300, title: 'GRANDMASTER', description: '🏆 The ultimate challenge!', bgColor: '#0a0010' },
 ]
 
 function createSoundEngine() {
@@ -84,7 +84,6 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
   const router = useRouter()
   const { showToast } = useToast()
   const [selectedLevel, setSelectedLevel] = useState(userLevel)
-  const [currentLevel, setCurrentLevel] = useState(userLevel)
   const [gameState, setGameState] = useState<'select' | 'playing' | 'won' | 'lost'>('select')
   const [bugs, setBugs] = useState<Bug[]>([])
   const [caught, setCaught] = useState(0)
@@ -109,6 +108,9 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
   const spawnBug = useCallback(() => {
     const container = containerRef.current
     if (!container) return
+    // Don't spawn too many bugs at once
+    const maxOnScreen = 8 + selectedLevel
+    if (bugsRef.current.filter(b => !b.caught).length >= maxOnScreen) return
     const { width, height } = container.getBoundingClientRect()
     const rand = Math.random()
     const isDanger = rand < config.dangerChance
@@ -133,7 +135,9 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
     setScore(0); setClaimed(false); setParticles([])
     setGameState('playing')
     sound()?.gameStart()
-    setTimeout(() => { for (let i = 0; i < 6; i++) spawnBug() }, 100)
+    // Spawn more bugs at start based on level
+    const initialBugs = Math.min(4 + selectedLevel, 10)
+    setTimeout(() => { for (let i = 0; i < initialBugs; i++) spawnBug() }, 100)
   }, [spawnBug, sound, config])
 
   useEffect(() => {
@@ -179,7 +183,7 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
         return t - 1
       })
     }, 1000)
-    const spawner = setInterval(spawnBug, Math.max(1500, 3000 - (selectedLevel * 200)))
+    const spawner = setInterval(spawnBug, Math.max(800, 2000 - (selectedLevel * 150)))
     return () => { clearInterval(timer); clearInterval(spawner) }
   }, [gameState, spawnBug, sound, selectedLevel])
 
@@ -230,15 +234,14 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
         setClaimed(true)
         showToast(`Level ${selectedLevel} complete!`, 'success', config.pointsReward)
         // Update user level if this is their current level
-        if (selectedLevel === currentLevel && selectedLevel < 10) {
+        if (selectedLevel === userLevel && selectedLevel < 10) {
           await fetch('/api/user/level', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ level: selectedLevel + 1 }),
           })
-          setCurrentLevel(selectedLevel + 1)
         }
-        setTimeout(() => { setGameState('select'); setClaimed(false) }, 2000)
+        setTimeout(() => router.push('/dashboard'), 2000)
       }
     } catch (e) { console.error(e) }
     finally { setClaiming(false) }
@@ -269,14 +272,14 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
         <div className="flex-1 overflow-y-auto px-4 py-8 max-w-3xl mx-auto w-full">
           <div className="text-center mb-8">
             <h1 className="font-display font-black text-4xl text-white mb-2">SELECT LEVEL</h1>
-            <p className="text-white/40">Your current level: <span id='current-level' className="text-[#00ff87] font-bold">Level {currentLevel}</span></p>
+            <p className="text-white/40">Your current level: <span className="text-[#00ff87] font-bold">Level {userLevel}</span></p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
             {LEVELS.map(lvl => {
-              const locked = lvl.level > currentLevel
-              const completed = lvl.level < currentLevel
-              const current = lvl.level === currentLevel
+              const locked = lvl.level > userLevel
+              const completed = lvl.level < userLevel
+              const current = lvl.level === userLevel
               return (
                 <button
                   key={lvl.level}
@@ -333,7 +336,7 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
 
           <button
             onClick={startGame}
-            disabled={selectedLevel > currentLevel}
+            disabled={selectedLevel > userLevel}
             className="w-full bg-[#00ff87] hover:bg-[#00cc6a] disabled:opacity-50 text-black font-display font-black text-xl py-4 rounded-2xl transition-all hover:scale-[1.02]"
           >
             {selectedLevel > userLevel ? '🔒 Level Locked' : `START LEVEL ${selectedLevel}`}
