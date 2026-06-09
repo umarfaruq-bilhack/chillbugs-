@@ -236,7 +236,7 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
             body: JSON.stringify({ level: selectedLevel + 1 }),
           })
         }
-        setTimeout(() => router.push('/dashboard'), 2000)
+        setTimeout(() => { setGameState('select'); setClaimed(false) }, 2000)
       }
     } catch (e) { console.error(e) }
     finally { setClaiming(false) }

@@ -1,11 +1,8 @@
 ﻿const fs = require('fs');
-let c = fs.readFileSync('app/api/tasks/route.ts', 'utf8');
-
-// Remove the duplicate const points declaration
-c = c.replace('\n  const points = TASK_POINTS[type]\n', '\n');
-
-// Fix let vs const issue
-c = c.replace('  const points = TASK_POINTS[type]\n  if (type === \'bug_catcher_game\'', '  let points = TASK_POINTS[type]\n  if (type === \'bug_catcher_game\'');
-
-fs.writeFileSync('app/api/tasks/route.ts', c, 'utf8');
+let c = fs.readFileSync('app/dashboard/game/BugCatcherGame.tsx', 'utf8');
+c = c.replace(
+  "setTimeout(() => router.push('/dashboard'), 2000)",
+  "setTimeout(() => { setGameState('select'); setClaimed(false) }, 2000)"
+);
+fs.writeFileSync('app/dashboard/game/BugCatcherGame.tsx', c, 'utf8');
 console.log('done');
