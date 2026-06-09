@@ -234,19 +234,18 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
       if (res.ok) {
         setClaimed(true)
         showToast(`Level ${selectedLevel} complete!`, 'success', config.pointsReward)
-        const nextLevel = selectedLevel + 1
         if (selectedLevel === currentLevel && selectedLevel < 10) {
           await fetch('/api/user/level', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ level: nextLevel }),
+            body: JSON.stringify({ level: selectedLevel + 1 }),
           })
-          setCurrentLevel(nextLevel)
+          setCurrentLevel(prev => prev + 1)
         }
         setTimeout(() => {
           setGameState('select')
           setClaimed(false)
-          if (selectedLevel < 10) setSelectedLevel(nextLevel)
+          if (selectedLevel < 10) setSelectedLevel(prev => prev + 1)
         }, 2000)
       }
     } catch (e) { console.error(e) }
@@ -278,14 +277,14 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
         <div className="flex-1 overflow-y-auto px-4 py-8 max-w-3xl mx-auto w-full">
           <div className="text-center mb-8">
             <h1 className="font-display font-black text-4xl text-white mb-2">SELECT LEVEL</h1>
-            <p className="text-white/40">Your current level: <span className="text-[#00ff87] font-bold">Level {userLevel}</span></p>
+            <p className="text-white/40">Your current level: <span className="text-[#00ff87] font-bold">Level {currentLevel}</span></p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
             {LEVELS.map(lvl => {
-              const locked = lvl.level > userLevel
-              const completed = lvl.level < userLevel
-              const current = lvl.level === userLevel
+              const locked = lvl.level > currentLevel
+              const completed = lvl.level < currentLevel
+              const current = lvl.level === currentLevel
               return (
                 <button
                   key={lvl.level}
@@ -342,10 +341,10 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
 
           <button
             onClick={startGame}
-            disabled={selectedLevel > userLevel}
+            disabled={selectedLevel > currentLevel}
             className="w-full bg-[#00ff87] hover:bg-[#00cc6a] disabled:opacity-50 text-black font-display font-black text-xl py-4 rounded-2xl transition-all hover:scale-[1.02]"
           >
-            {selectedLevel > userLevel ? '🔒 Level Locked' : `START LEVEL ${selectedLevel}`}
+            {selectedLevel > currentLevel ? '🔒 Level Locked' : `START LEVEL ${selectedLevel}`}
           </button>
         </div>
       </div>
@@ -475,4 +474,3 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
     </div>
   )
 }
-
