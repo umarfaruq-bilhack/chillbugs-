@@ -26,5 +26,14 @@ export default async function GamePage() {
     )
   }
 
-  return <BugCatcherGame />
+  // Get user's current level
+  const { data: user } = await supabaseAdmin
+    .from('users')
+    .select('game_level')
+    .eq('x_id', session.user.x_id)
+    .single()
+
+  const userLevel = user?.game_level || 1
+
+  return <BugCatcherGame userLevel={userLevel} />
 }

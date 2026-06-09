@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 
+const LEVEL_POINTS: Record<number, number> = {
+  1: 50, 2: 60, 3: 75, 4: 90, 5: 110,
+  6: 130, 7: 155, 8: 180, 9: 210, 10: 300
+}
+
 const TASK_POINTS: Record<string, number> = {
   daily_checkin: 10,
   bug_catcher_game: 50,
@@ -24,10 +29,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const { type } = await req.json()
+  const { type, level } = await req.json()
 
   if (!TASK_POINTS[type]) {
     return NextResponse.json({ error: 'Invalid task type' }, { status: 400 })
+  }
+
+  // Use level-based points for game
+  let points = TASK_POINTS[type]
+  if (type === 'bug_catcher_game' && level) {
+    points = LEVEL_POINTS[level] || 50
   }
 
   // Check if feature is enabled
@@ -110,8 +121,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Update user points
-  const updateData: any = { bug_points: user.bug_points + points }
-  if (type === 'daily_checkin') {
+  const updateData: any = { bug_points: user.bug_points + points }  if (type === 'daily_checkin') {
     updateData.last_checkin = new Date().toISOString()
     updateData.streak_count = newStreak
   }
