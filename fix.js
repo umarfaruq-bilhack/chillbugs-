@@ -1,12 +1,18 @@
 ﻿const fs = require('fs');
-let c = fs.readFileSync('lib/auth.ts', 'utf8');
+let c = fs.readFileSync('app/dashboard/game/BugCatcherGame.tsx', 'utf8');
+
+// After claiming, go to select screen and advance to next level
 c = c.replace(
-  'pages: {',
-  `session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  pages: {`
+  "setTimeout(() => { setGameState('select'); setClaimed(false) }, 2000)",
+  `setTimeout(() => {
+          setGameState('select')
+          setClaimed(false)
+          if (selectedLevel === currentLevel && selectedLevel < 10) {
+            setCurrentLevel(prev => prev + 1)
+            setSelectedLevel(selectedLevel + 1)
+          }
+        }, 2000)`
 );
-fs.writeFileSync('lib/auth.ts', c, 'utf8');
+
+fs.writeFileSync('app/dashboard/game/BugCatcherGame.tsx', c, 'utf8');
 console.log('done');
