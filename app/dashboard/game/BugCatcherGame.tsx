@@ -234,18 +234,19 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
       if (res.ok) {
         setClaimed(true)
         showToast(`Level ${selectedLevel} complete!`, 'success', config.pointsReward)
+        const nextLevel = selectedLevel + 1
         if (selectedLevel === currentLevel && selectedLevel < 10) {
           await fetch('/api/user/level', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ level: selectedLevel + 1 }),
+            body: JSON.stringify({ level: nextLevel }),
           })
-          setCurrentLevel(prev => prev + 1)
+          setCurrentLevel(nextLevel)
         }
         setTimeout(() => {
           setGameState('select')
           setClaimed(false)
-          if (selectedLevel < 10) setSelectedLevel(prev => prev + 1)
+          if (selectedLevel < 10) setSelectedLevel(nextLevel)
         }, 2000)
       }
     } catch (e) { console.error(e) }
