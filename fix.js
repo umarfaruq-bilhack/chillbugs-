@@ -1,17 +1,10 @@
 ﻿const fs = require('fs');
 let c = fs.readFileSync('app/dashboard/game/BugCatcherGame.tsx', 'utf8');
 
-// After claiming, go to select screen and advance to next level
+// Add currentLevel state after selectedLevel
 c = c.replace(
-  "setTimeout(() => { setGameState('select'); setClaimed(false) }, 2000)",
-  `setTimeout(() => {
-          setGameState('select')
-          setClaimed(false)
-          if (selectedLevel === currentLevel && selectedLevel < 10) {
-            setCurrentLevel(prev => prev + 1)
-            setSelectedLevel(selectedLevel + 1)
-          }
-        }, 2000)`
+  'const [selectedLevel, setSelectedLevel] = useState(userLevel)',
+  'const [selectedLevel, setSelectedLevel] = useState(userLevel)\n  const [currentLevel, setCurrentLevel] = useState(userLevel)'
 );
 
 fs.writeFileSync('app/dashboard/game/BugCatcherGame.tsx', c, 'utf8');

@@ -84,6 +84,7 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
   const router = useRouter()
   const { showToast } = useToast()
   const [selectedLevel, setSelectedLevel] = useState(userLevel)
+  const [currentLevel, setCurrentLevel] = useState(userLevel)
   const [gameState, setGameState] = useState<'select' | 'playing' | 'won' | 'lost'>('select')
   const [bugs, setBugs] = useState<Bug[]>([])
   const [caught, setCaught] = useState(0)
