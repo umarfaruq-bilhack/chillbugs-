@@ -101,6 +101,8 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
   const [showIntro, setShowIntro] = useState(true)
   const [step, setStep] = useState(1)
   const [doneFollow, setDoneFollow] = useState(false)
+  const [doneFounder, setDoneFounder] = useState(false)
+  const [clickedFounder, setClickedFounder] = useState(false)
   const [doneRepost, setDoneRepost] = useState(false)
   const [doneQuote, setDoneQuote] = useState(false)
   const [doneTag, setDoneTag] = useState(false)
@@ -130,7 +132,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
     setCommentVerified(true)
   }
 
-  const allTasksDone = doneFollow && doneRepost && doneQuote && doneTag && commentVerified
+  const allTasksDone = doneFollow && doneFounder && doneRepost && doneQuote && doneTag && commentVerified
 
   const quoteText = `Joining @TheChillBugs Buglist! 🐛\n\nTag your friends below 👇\nJoin here: ${typeof window !== 'undefined' ? window.location.origin : 'https://chillbugs.xyz'}?wlref=${form.x_username.replace('@','')}`
 
@@ -342,17 +344,31 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
                 <button onClick={() => setDoneFollow(true)} style={markBtn}>✓ I've followed @TheChillBugs — mark as done</button>
               )}
 
+              {/* Task 1b - Follow Founder */}
+              <div style={taskRow(doneFounder, !doneFollow ? 0.4 : 1)}>
+                <div style={taskIcon(doneFounder)}>{doneFounder ? '✅' : '🐦'}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: 'white', fontSize: '14px', fontWeight: 600 }}>Follow the Founder</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>Follow @y0itsnash on X</div>
+                </div>
+                {doneFollow && !doneFounder && <button onClick={() => { window.open('https://x.com/y0itsnash?s=21', '_blank'); setClickedFounder(true) }} style={goBtn}>Go →</button>}
+                {doneFounder && <span style={{ color: '#00ff87', fontSize: '13px', fontWeight: 700 }}>Done ✓</span>}
+              </div>
+              {doneFollow && !doneFounder && clickedFounder && (
+                <button onClick={() => setDoneFounder(true)} style={markBtn}>✓ I've followed @y0itsnash — mark as done</button>
+              )}
+
               {/* Task 2 - Repost */}
-              <div style={taskRow(doneRepost, !doneFollow ? 0.4 : 1)}>
+              <div style={taskRow(doneRepost, !doneFounder ? 0.4 : 1)}>
                 <div style={taskIcon(doneRepost)}>{doneRepost ? '✅' : '🔁'}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: 'white', fontSize: '14px', fontWeight: 600 }}>Like & Repost</div>
                   <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>Like & repost the pinned tweet</div>
                 </div>
-                {doneFollow && !doneRepost && <button onClick={() => { window.open(tweetUrl, '_blank'); setClickedRepost(true) }} style={goBtn}>Go →</button>}
+                {doneFounder && !doneRepost && <button onClick={() => { window.open(tweetUrl, '_blank'); setClickedRepost(true) }} style={goBtn}>Go →</button>}
                 {doneRepost && <span style={{ color: '#00ff87', fontSize: '13px', fontWeight: 700 }}>Done ✓</span>}
               </div>
-              {doneFollow && !doneRepost && clickedRepost && (
+              {doneFounder && !doneRepost && clickedRepost && (
                 <button onClick={() => setDoneRepost(true)} style={markBtn}>✓ I've liked & reposted — mark as done</button>
               )}
 
@@ -427,7 +443,7 @@ export function WLApplication({ tweetUrl = 'https://twitter.com/TheChillBugs' }:
               </div>
               <div style={{ background: '#0a0a0a', border: '1px solid rgba(0,255,135,0.2)', borderRadius: '14px', padding: '12px 16px', marginBottom: '20px', fontSize: '13px' }}>
                 <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', margin: '0 0 8px', letterSpacing: '2px' }}>ALL TASKS COMPLETED</p>
-                {['Followed @TheChillBugs', 'Liked & reposted pinned tweet', 'Quoted the tweet & tagged friends', 'Tagged 2 friends in comments', 'Comment link verified'].map(t => (
+                {['Followed @TheChillBugs', 'Followed @y0itsnash', 'Liked & reposted pinned tweet', 'Quoted the tweet & tagged friends', 'Tagged 2 friends in comments', 'Comment link verified'].map(t => (
                   <div key={t} style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>✅ {t}</div>
                 ))}
               </div>
