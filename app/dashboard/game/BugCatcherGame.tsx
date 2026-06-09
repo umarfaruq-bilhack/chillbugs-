@@ -474,3 +474,5 @@ export function BugCatcherGame({ userLevel = 1 }: Props) {
     </div>
   )
 }
+ 
+ 
