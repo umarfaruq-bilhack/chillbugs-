@@ -121,7 +121,8 @@ export async function POST(req: NextRequest) {
   }
 
   // Update user points
-  const updateData: any = { bug_points: user.bug_points + points }  if (type === 'daily_checkin') {
+  const updateData: any = { bug_points: user.bug_points + points }
+  if (type === 'daily_checkin') {
     updateData.last_checkin = new Date().toISOString()
     updateData.streak_count = newStreak
   }
