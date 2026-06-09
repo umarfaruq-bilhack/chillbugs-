@@ -108,7 +108,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const points = TASK_POINTS[type]
 
   // Calculate streak for checkin
   let newStreak = user.streak_count
