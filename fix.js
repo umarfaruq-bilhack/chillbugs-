@@ -1,7 +1,9 @@
 ﻿const fs = require('fs');
-let c = fs.readFileSync('app/dashboard/game/BugCatcherGame.tsx', 'utf8');
-c = c.replace(/\x00/g, '');
-// Remove any trailing blank lines
-c = c.trimEnd() + '\n';
-fs.writeFileSync('app/dashboard/game/BugCatcherGame.tsx', c, 'utf8');
+let c = fs.readFileSync('app/dashboard/DashboardClient.tsx', 'utf8');
+// Add settings to Props interface
+c = c.replace(
+  'interface Props {',
+  'interface Props {\n  settings: Record<string, boolean>'
+);
+fs.writeFileSync('app/dashboard/DashboardClient.tsx', c, 'utf8');
 console.log('done');

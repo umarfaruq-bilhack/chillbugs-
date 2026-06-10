@@ -9,6 +9,7 @@ import { User, Activity, LeaderboardEntry } from '@/types'
 import { shortWallet, formatPoints } from '@/lib/utils'
 
 interface Props {
+  settings: Record<string, boolean>
   user: User
   rank: number
   activities: Activity[]
