@@ -53,10 +53,11 @@ export default async function DashboardPage() {
     .order('bug_points', { ascending: false })
     .limit(10)
 
-  // Fetch platform settings
+  // Fetch platform settings - only boolean feature flags
   const { data: settingsData } = await supabaseAdmin
     .from('platform_settings')
-    .select('*')
+    .select('key, value')
+    .not('key', 'like', '%_url')
 
   const settings: Record<string, boolean> = {}
   settingsData?.forEach(s => { settings[s.key] = s.value })
