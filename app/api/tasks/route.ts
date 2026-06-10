@@ -108,7 +108,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-
   // Calculate streak for checkin
   let newStreak = user.streak_count
   if (type === 'daily_checkin') {
