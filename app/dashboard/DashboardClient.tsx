@@ -1,28 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { signOut } from 'next-auth/react'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import { User, Activity, LeaderboardEntry } from '@/types'
 import { shortWallet, formatPoints } from '@/lib/utils'
+import { useToast } from '@/components/Toast'
 
 interface Props {
-  settings: Record<string, boolean>
   user: User
   rank: number
   activities: Activity[]
   leaderboard: LeaderboardEntry[]
   referralCount: number
+  settings: Record<string, boolean>
 }
 
 const TASKS = [
-  { id: 'daily_checkin', icon: '📅', title: 'Daily Check-in', desc: 'Tap your bug to keep your streak alive', pts: 10, tag: 'Daily', available: true },
-  { id: 'bug_catcher_game', icon: '🎮', title: 'Bug Catcher', desc: 'Catch 10 bugs in under 30 seconds', pts: 50, tag: 'Game', available: true },
-  { id: 'lore_quiz', icon: '❓', title: 'Lore Quiz', desc: 'Answer 5 questions about the Chill Bugs universe', pts: 30, tag: 'Quest', available: true },
-  { id: 'share_x', icon: '🐦', title: 'Share on X', desc: 'Share your referral link on X', pts: 25, tag: 'Social', available: true },
-  { id: 'referral', icon: '👥', title: 'Refer a Friend', desc: 'Invite friends using your referral link', pts: 40, tag: 'Referral', available: true },
+  { id: 'daily_checkin', icon: '📅', title: 'Daily Check-in', desc: 'Tap your bug to keep your streak alive', pts: 10, tag: 'Daily', settingKey: 'checkin_enabled' },
+  { id: 'bug_catcher_game', icon: '🎮', title: 'Bug Catcher', desc: 'Catch 10 bugs in under 30 seconds', pts: 50, tag: 'Game', settingKey: 'game_enabled' },
+  { id: 'lore_quiz', icon: '❓', title: 'Lore Quiz', desc: 'Answer 5 questions about the Chill Bugs universe', pts: 30, tag: 'Quest', settingKey: 'quiz_enabled' },
+  { id: 'share_x', icon: '🐦', title: 'Share on X', desc: 'Share your referral link on X', pts: 25, tag: 'Social', settingKey: 'share_x_enabled' },
+  { id: 'referral', icon: '👥', title: 'Refer a Friend', desc: 'Invite friends using your referral link', pts: 40, tag: 'Referral', settingKey: 'referral_enabled' },
+  { id: 'art_contest', icon: '🎨', title: 'Create Bug Art', desc: 'Create fan art, tag @TheChillBugs and submit your tweet', pts: 0, tag: 'Creative', settingKey: 'art_contest_enabled', href: '/dashboard/art' },
+  { id: 'collab', icon: '🤝', title: 'Collaboration', desc: 'Apply to partner with Chill Bugs for WL allocation', pts: 0, tag: 'Collab', settingKey: 'collab_enabled', href: '/dashboard/collab' },
 ]
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -33,8 +36,9 @@ const ACTIVITY_LABELS: Record<string, string> = {
   referral: 'Referral Bonus',
 }
 
-export function DashboardClient({ user, rank, activities, leaderboard, referralCount }: Props) {
+export function DashboardClient({ user, rank, activities, leaderboard, referralCount, settings: initialSettings }: Props) {
   const [activeTab, setActiveTab] = useState<'tasks' | 'leaderboard' | 'activity'>('tasks')
+  const [settings, setSettings] = useState<Record<string, boolean>>(initialSettings)
   const [copied, setCopied] = useState(false)
   const [checkinLoading, setCheckinLoading] = useState(false)
   const todayDate = new Date().toISOString().split('T')[0]
@@ -48,6 +52,15 @@ export function DashboardClient({ user, rank, activities, leaderboard, referralC
   const [shareCountdown, setShareCountdown] = useState(5)
   const { address } = useAccount()
   const router = useRouter()
+  const { showToast } = useToast()
+
+  // Always fetch fresh settings from API on mount
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then(r => r.json())
+      .then(data => { if (data && typeof data === 'object') setSettings(data) })
+      .catch(() => {})
+  }, [])
 
   const wlProgress = Math.min((user.bug_points / 2000) * 100, 100)
   const isTop50 = rank <= 50
@@ -80,6 +93,7 @@ export function DashboardClient({ user, rank, activities, leaderboard, referralC
       })
       if (res.ok) {
         setShareState('done')
+        showToast('Thanks for sharing!', 'success', 25)
         setTimeout(() => router.refresh(), 1500)
       } else {
         setShareState('done')
@@ -101,10 +115,12 @@ export function DashboardClient({ user, rank, activities, leaderboard, referralC
       if (res.ok) {
         setCheckinDone(true)
         setCheckinMsg(`+10 pts! Streak: ${data.streak} days 🔥`)
+        showToast('Daily check-in complete!', 'success', 10)
         setTimeout(() => router.refresh(), 1500)
       } else {
         setCheckinMsg(data.error || 'Already checked in today!')
         setCheckinDone(true)
+        showToast(data.error || 'Already checked in today!', 'error')
       }
     } finally {
       setCheckinLoading(false)
@@ -115,6 +131,7 @@ export function DashboardClient({ user, rank, activities, leaderboard, referralC
     const link = `${window.location.origin}?ref=${user.referral_code}`
     navigator.clipboard.writeText(link)
     setCopied(true)
+    showToast('Referral link copied!', 'info')
     setTimeout(() => setCopied(false), 2000)
   }
 
@@ -345,8 +362,14 @@ export function DashboardClient({ user, rank, activities, leaderboard, referralC
         {/* Tab content */}
         {activeTab === 'tasks' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {TASKS.map((task) => (
-              <div key={task.id} className="bg-[#111111] border border-[#2a2a2a] hover:border-[#00ff87]/30 rounded-2xl p-5 transition-colors group">
+            {TASKS.map((task) => {
+              const isEnabled = settings[task.settingKey] !== false
+              return (
+              <div key={task.id} className={`bg-[#111111] border rounded-2xl p-5 transition-colors group relative
+                ${isEnabled ? 'border-[#2a2a2a] hover:border-[#00ff87]/30' : 'border-[#2a2a2a] opacity-50'}`}>
+                {!isEnabled && (
+                  <div className="absolute top-3 right-3 bg-[#2a2a2a] text-white/40 text-xs px-2 py-0.5 rounded-full">Closed</div>
+                )}
                 <div className="flex items-start justify-between mb-3">
                   <span className="text-3xl">{task.icon}</span>
                   <span className="text-xs font-medium text-white/30 bg-white/5 px-2 py-1 rounded-full">{task.tag}</span>
@@ -354,46 +377,56 @@ export function DashboardClient({ user, rank, activities, leaderboard, referralC
                 <h3 className="font-display font-black text-white text-lg mb-1">{task.title}</h3>
                 <p className="text-white/40 text-sm leading-relaxed mb-4">{task.desc}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#00ff87] text-sm font-semibold">+{task.pts} pts</span>
-                  {task.id === 'daily_checkin' && (
-                    <button
-                      onClick={handleCheckin}
-                      disabled={checkinLoading || checkinDone}
-                      className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors disabled:opacity-50"
-                    >
+                  <span className="text-[#00ff87] text-sm font-semibold">
+                    {task.pts > 0 ? `+${task.pts} pts` : 'Bonus WL'}
+                  </span>
+                  {isEnabled && task.id === 'daily_checkin' && (
+                    <button onClick={handleCheckin} disabled={checkinLoading || checkinDone}
+                      className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors disabled:opacity-50">
                       {checkinLoading ? '...' : checkinDone ? checkinMsg : 'Check In'}
                     </button>
                   )}
-                  {task.id === 'bug_catcher_game' && (
+                  {isEnabled && task.id === 'bug_catcher_game' && (
                     <a href="/dashboard/game" className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors">
                       Play Now
                     </a>
                   )}
-                  {task.id === 'lore_quiz' && (
+                  {isEnabled && task.id === 'lore_quiz' && (
                     <a href="/dashboard/quiz" className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors">
                       Start Quiz
                     </a>
                   )}
-                  {task.id === 'share_x' && (
-                    <button
-                      onClick={shareState === 'idle' ? handleShare : undefined}
+                  {isEnabled && task.id === 'share_x' && (
+                    <button onClick={shareState === 'idle' ? handleShare : undefined}
                       disabled={shareState === 'counting' || shareState === 'claiming' || shareState === 'done'}
-                      className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors disabled:opacity-70"
-                    >
+                      className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors disabled:opacity-70">
                       {shareState === 'idle' && 'Share'}
                       {shareState === 'counting' && `Verifying... ${shareCountdown}s`}
                       {shareState === 'claiming' && 'Claiming...'}
                       {shareState === 'done' && '✅ Done!'}
                     </button>
                   )}
-                  {task.id === 'referral' && (
+                  {isEnabled && task.id === 'referral' && (
                     <button onClick={copyReferral} className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors">
                       {copied ? '✅ Copied' : 'Copy Link'}
                     </button>
                   )}
+                  {isEnabled && task.id === 'art_contest' && (
+                    <a href="/dashboard/art" className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors">
+                      Submit Art
+                    </a>
+                  )}
+                  {isEnabled && task.id === 'collab' && (
+                    <a href="/dashboard/collab" className="bg-[#00ff87]/10 hover:bg-[#00ff87]/20 border border-[#00ff87]/20 text-[#00ff87] rounded-xl px-4 py-2 text-xs font-medium transition-colors">
+                      Apply
+                    </a>
+                  )}
+                  {!isEnabled && (
+                    <span className="text-white/20 text-xs">Currently unavailable</span>
+                  )}
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         )}
 

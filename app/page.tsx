@@ -367,7 +367,7 @@ export default async function Home() {
             @TheChillBugs
           </a>
         </div>
-        <p className="text-xs text-white/20">2025 Chill Bugs. All rights reserved.</p>
+        <p className="text-xs text-white/20">2026 Chill Bugs. All rights reserved.</p>
       </footer>
     </div>
   )
