@@ -30,6 +30,7 @@ interface Settings {
   art_contest_enabled: boolean
   collab_enabled: boolean
   wl_application_enabled: boolean
+  wl_card_enabled: boolean
 }
 
 interface ArtSubmission {
@@ -72,7 +73,7 @@ export function AdminDashboardClient() {
   const [settings, setSettings] = useState<Settings>({
     game_enabled: true, quiz_enabled: true, checkin_enabled: true,
     share_x_enabled: true, referral_enabled: true, art_contest_enabled: true, collab_enabled: false,
-    wl_application_enabled: false,
+    wl_application_enabled: false, wl_card_enabled: false,
   })
   const [wlTweetUrl, setWlTweetUrl] = useState('https://twitter.com/TheChillBugs')
   const [savingTweet, setSavingTweet] = useState(false)
@@ -266,7 +267,8 @@ export function AdminDashboardClient() {
   }
 
   const SETTINGS_LIST = [
-    { key: 'wl_application_enabled', label: 'WL Application Form', icon: '📋', desc: 'Show WL application form instead of landing page' },
+    { key: 'wl_application_enabled', label: 'WL Application (Full Page)', icon: '📋', desc: 'Replaces entire landing page with WL application form' },
+    { key: 'wl_card_enabled', label: 'WL Application (Card)', icon: '🎫', desc: 'Shows Apply for WL card in More Ways to Earn WL section' },
     { key: 'game_enabled', label: 'Bug Catcher Game', icon: '🎮', desc: 'Allow users to play and earn points' },
     { key: 'quiz_enabled', label: 'Lore Quiz', icon: '❓', desc: 'Allow users to take quiz and earn points' },
     { key: 'checkin_enabled', label: 'Daily Check-in', icon: '📅', desc: 'Allow users to check in daily' },

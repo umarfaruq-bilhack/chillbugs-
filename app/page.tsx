@@ -29,7 +29,14 @@ export default async function Home() {
 
   const wlApplicationEnabled = wlSetting?.value ?? false
 
-  // Fetch tweet URL for WL application
+  // Fetch wl card setting separately
+  const { data: wlCardSetting } = await supabaseAdmin
+    .from('platform_settings')
+    .select('value')
+    .eq('key', 'wl_card_enabled')
+    .single()
+
+  const wlCardEnabled = wlCardSetting?.value ?? false
   const { data: tweetSetting } = await supabaseAdmin
     .from('platform_settings')
     .select('text_value')
@@ -278,13 +285,13 @@ export default async function Home() {
               {
                 icon: '📋',
                 title: 'Apply for WL',
-                desc: wlApplicationEnabled
+                desc: wlCardEnabled
                   ? 'Applications are open! Complete social tasks and apply directly for a guaranteed whitelist spot.'
                   : 'WL applications open soon. Follow @TheChillBugs to be notified when applications go live.',
-                tag: wlApplicationEnabled ? 'Open Now' : 'Coming Soon',
-                tagColor: wlApplicationEnabled ? 'text-[#00ff87]' : 'text-white/30',
-                cta: wlApplicationEnabled ? 'Apply Now →' : 'Coming Soon',
-                href: wlApplicationEnabled ? '/apply' : '#',
+                tag: wlCardEnabled ? 'Open Now' : 'Coming Soon',
+                tagColor: wlCardEnabled ? 'text-[#00ff87]' : 'text-white/30',
+                cta: wlCardEnabled ? 'Apply Now →' : 'Coming Soon',
+                href: wlCardEnabled ? '/apply' : '#',
               },
             ].map((item) => (
               <div key={item.title} className="bg-[#111111] border border-[#2a2a2a] rounded-3xl p-6 flex flex-col hover:border-[#00ff87]/20 transition-colors group">
