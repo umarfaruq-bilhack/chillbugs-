@@ -5,14 +5,21 @@ import { redirect } from 'next/navigation'
 export const dynamic = 'force-dynamic'
 
 export default async function ApplyPage() {
-  const { data: wlSetting } = await supabaseAdmin
+  // Check either wl_card_enabled OR wl_application_enabled
+  const { data: cardSetting } = await supabaseAdmin
+    .from('platform_settings')
+    .select('value')
+    .eq('key', 'wl_card_enabled')
+    .single()
+
+  const { data: fullSetting } = await supabaseAdmin
     .from('platform_settings')
     .select('value')
     .eq('key', 'wl_application_enabled')
     .single()
 
-  // If WL application is disabled, redirect to home
-  if (!wlSetting?.value) {
+  // Allow access if either setting is enabled
+  if (!cardSetting?.value && !fullSetting?.value) {
     redirect('/')
   }
 
