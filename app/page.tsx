@@ -284,7 +284,7 @@ export default async function Home() {
                 tag: wlApplicationEnabled ? 'Open Now' : 'Coming Soon',
                 tagColor: wlApplicationEnabled ? 'text-[#00ff87]' : 'text-white/30',
                 cta: wlApplicationEnabled ? 'Apply Now →' : 'Coming Soon',
-                href: wlApplicationEnabled ? '/?apply=1' : '#',
+                href: wlApplicationEnabled ? '/apply' : '#',
               },
             ].map((item) => (
               <div key={item.title} className="bg-[#111111] border border-[#2a2a2a] rounded-3xl p-6 flex flex-col hover:border-[#00ff87]/20 transition-colors group">
